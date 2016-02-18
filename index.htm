@@ -1,0 +1,1865 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Bastion Gazette</title>
+<link href='https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy' rel='stylesheet' type='text/css'>
+<style>
+body {
+	font-family: 'Sorts Mill Goudy', serif;
+	padding: 0;
+	margin: 0;
+}
+
+#about {
+	padding-top: 2em;
+	text-align: center;
+	font-size: smaller;
+}
+
+.paperheader {
+	text-transform: uppercase;
+	letter-spacing: 1.25em;
+	line-height: 0.15em;
+	text-align: center;
+}
+
+.paperheader header h5 {
+	display: -webkit-flex;
+	display: flex;
+}
+
+.paperheader header h5 span {
+	-webkit-flex: auto;
+	flex: auto;
+}
+
+.paperheader header h5 span:first-child,
+.paperheader header h5 span:last-child
+{
+	font-size: smaller;
+	letter-spacing: 0.2em;
+	-webkit-flex: 1;
+	flex: 1
+}
+
+hr {
+	border-bottom: 3px solid black;
+	border-radius: 2px;
+	width: 60%;
+}
+
+.articles {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.post {
+	width: 20em;
+	text-align: justify;
+	padding: 1em;
+	flex: none;
+}
+
+.post .author {
+	font-style: italic;
+	text-transform: uppercase;
+	text-align: right;
+	font-size: smaller;
+}
+
+.post .datestamp {
+	font-style: italic;
+}
+
+.imagepost {
+	-webkit-flex: none;
+	flex: none;
+	max-width: 30em;
+	text-align: center;
+}
+
+.imagepost img {
+	max-width: 100%;
+}
+
+.imagepost footer {
+	font-style: italic;
+	font-size: smaller;
+	padding: 0 0.7em 0 0.7em;
+}
+
+.abilities {
+	display: -webkit-flex;
+	display: flex;
+	text-align: center;
+}
+
+.property {
+	-webkit-flex: 1;
+	flex: 1;
+}
+
+.property:first-letter {
+	font-size: larger;
+}
+
+.propertyvalue {
+	font-family: serif;
+	font-size: 1.8em;
+}
+
+.hp {
+	font-size: larger;
+}
+
+.equipment,
+.companion {
+	padding: 0.7em 0.7em 0 0.7em;
+}
+
+.fullname {
+	text-transform: uppercase;
+	text-align: center;
+	border-bottom: 3px double silver;
+}
+
+.fullname:first-letter {
+	font-size: 1.25em;
+}
+
+@media all and (max-width: 640px) {
+
+	.paperheader header h5 span:first-child,
+	.paperheader header h5 span:last-child
+	{
+		display: none;
+	}
+
+	.paperheader {
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		line-height: 0.15em;
+		text-align: center;
+	}
+
+	.post {
+		padding: 1em 0 1em 0;
+		-webkit-flex: 0 1 20em;
+		flex: 1 1 20em;
+	}
+	
+	.imagepost {
+		padding: 0;
+		-webkit-flex: 1 1 20em;
+		flex: 1 1 20em;
+	}
+
+}
+</style>
+</head>
+<body>
+
+<article class="paperheader">
+	<header>
+	<h5>
+	<span>[Numb. XXXV]</span>
+	<span>The</span>
+	<span>VOL IV</span>
+	</h5>
+	</header>
+	
+	<section>
+	<h1>
+	Bastion Gazette.
+	</h1>
+	</section>
+	
+	<footer>
+	<h6 id="newspaperdate">Saturday, May 7</h6>
+	<hr/>
+	</footer>
+</article>
+
+<article class="articles" id="sheet">
+
+<!--
+<article class="post">
+<section class="text">
+In Pursuance of an act of assembly, the commisshoners of the town of ville, will fell for ready money, on the first Tuesday in July next, at the house of Thomas Win, in said town, fundry sqaures and half acre lots in the town of Louisville, their situation and numbers will be made known at the time of sale.
+</section>
+<section class="author">
+By order of the hoard.
+James F. Moore, Chairman
+</section>
+<section class="datestamp">
+March 27, 1791
+</section>
+</article>
+-->
+
+</article>
+
+<article class="articles" id="images"></article>
+
+<footer id="about">
+Made by <a href="http://acornafloat.blogspot.com">Jensan</a>. Get <a href="http://soogagames.blogspot.co.uk/2014/11/into-odd-full-version-print-and-pdf.html">Into the Odd here</a>.
+</footer>
+
+<script>
+
+var tbgLCG = {
+	startseed: null,
+	seed: +new Date(),
+	m: Math.pow(2, 32),
+	a: 1664525,
+	c: 1013904223,
+	init: function () {
+		if (this.startseed === null) {
+			this.startseed = this.seed;
+		}
+	},
+	random: function () {
+		this.init();
+		this.seed = (this.a * this.seed + this.c) % this.m;
+		return this.seed;
+	},
+	randomFloat: function () {
+		return this.random() / this.m;
+	}
+};
+
+function tbgSetNewspaperDate() {
+	var days = ['Sun','Mon','Tues','Wednes','Thurs','Fri','Satur'];
+	var d = new Date();
+	document.getElementById('newspaperdate').innerHTML =
+		days[d.getUTCDay()] + 'day, Aug ' + d.getUTCDate();
+}
+
+function tbgD(num, sides) {
+	var min = num;
+	var max = 1 + num * sides;
+	return Math.floor(tbgLCG.randomFloat()*(max-min)+min);
+}
+
+function tbgTestD(num, sides) {
+	var min = num;
+	var max = num * sides;
+	var res;
+	
+	for (i=0; i < 10000000; ++i) {
+		res = tbgD(num, sides);
+		if (res < min || res > max) {
+			throw 'out of bounds: res='+res+' for '+num+'d'+sides+' ('+min+'-'+max+')';
+		}
+	}
+	return true;
+}
+
+function tbgFlipCoin() {
+	return tbgD(1,2) === 1;
+}
+
+function tbgGenerateArcanum() {
+	var arcana = [
+		'Space folder',
+		'Heart locket',
+		'Pale flame',
+		'Soul wrench',
+		'Gavel of the Unbreakable Seal',
+		'Foul censer',
+		'Red-oil stave',
+		'Pain sign',
+		'Spider skin',
+		'Sunblessed bands',
+		'Flesh-tome of Babble',
+		'Tyrant\'s rod',
+		'Black veil',
+		'Binding strands',
+		'Heat ray',
+		'Miniaturisation coil',
+		'Chilling cloud',
+		'Phase key',
+		'Bone magnet',
+		'Mirror engine'
+	];
+	return arcana[tbgD(1,arcana.length)-1] + ' (arcana)';
+}
+
+function tbgGenerateItem(count) {
+	var count = count || 1;
+	var items = [
+		'2 Acid Flasks',
+		'3 Bombs',
+		'Accordion',
+		'Acid',
+		'Animal Repellent',
+		'Animal Trap',
+		'Arcanum',
+		'Artificial Lung',
+		'Baton (d6)',
+		'Bayonet (d6)',
+		'Bell',
+		'Blunderbuss (d8)',
+		'Bolt-Cutters',
+		'Bomb',
+		'Bow (d6)',
+		'Burnt Face',
+		'Canary',
+		'Cane (d6)',
+		'Chain',
+		'Cigars',
+		'Claymore (d8)',
+		'Club (d6)',
+		'Crowbar',
+		'Dagger (d6)',
+		'Darkvision',
+		'Debt (3g)',
+		'Drum',
+		'Eagle',
+		'Ether',
+		'Fake Pistol',
+		'Fancy Hat',
+		'Ferret',
+		'Fiddle',
+		'Fire Oil',
+		'Flashbang',
+		'Flute',
+		'Fugitive',
+		'Game Set',
+		'Garotte (d6)',
+		'Gloves',
+		'Glowing Eyes',
+		'Glue',
+		'Grappling Hook',
+		'Grease',
+		'Hacksaw',
+		'Halberd (d8)',
+		'Hand Drill',
+		'Harpoon Gun (d8)',
+		'Hatchet (d6)',
+		'Hawk',
+		'Hound',
+		'Illiterate',
+		'Iron Limb',
+		'Knife (d6)',
+		'Knives (d6)',
+		'Lighter Boy',
+		'Longaxe (d8)',
+		'Lost Eye',
+		'Loud Lungs',
+		'Mace (d6)',
+		'Machete (d6)',
+		'Magnifying Glass',
+		'Mallet',
+		'Manacles',
+		'Marbles',
+		'Maul (d8)',
+		'Mirror',
+		'Modern Armour',
+		'Mule',
+		'Musket (d8)',
+		'Mute',
+		'Mutt',
+		'Net',
+		'No Nose/Scent',
+		'One Arm',
+		'Paint',
+		'Pick-Axe (d6)',
+		'Pigeon',
+		'Pistol (d6)',
+		'Pistol Brace (d8)',
+		'Pocket-watch',
+		'Poison',
+		'Portable Ram',
+		'Prosthetic Hand',
+		'Prosthetic Leg',
+		'Rifle (d8)',
+		'Rocket',
+		'Rum',
+		'Saw',
+		'Shield Armour',
+		'Shovel',
+		'Smoke-bomb',
+		'Spyglass',
+		'Staff (d8)',
+		'Steel Wire',
+		'Sword & Dagger (d8)',
+		'Sword (d6)',
+		'Talking Parrot',
+		'Tattered Clothes',
+		'Throwing',
+		'Throwing Axes',
+		'Throwing Knives',
+		'Tongs',
+		'Toxin-Immune',
+		'Trumpet',
+		'Ugly Mutation',
+		'Whip (d6)'
+	];
+	var generated = [];
+	var newItem;
+	var mayHurt = function (s) {
+		return s.indexOf('(') >= 0;
+	};
+	var mayHurtCount = 0;
+	var mayHurtMinimumCount = 1;
+	var mayHurtThreshold = 2;
+	while (generated.length < count) {
+		newItem = items[tbgD(1, items.length) - 1];
+		if (newItem === 'Arcanum') {
+			newItem = tbgGenerateArcanum();
+		}
+		if (generated.indexOf(newItem) < 0) {
+			if ((mayHurtCount == mayHurtThreshold && mayHurt(newItem)) ||
+			    (mayHurtCount < mayHurtMinimumCount && !mayHurt(newItem)))
+			{
+				continue;
+			}
+			
+			generated.push(newItem);
+			if (mayHurt(newItem)) {
+				++mayHurtCount;
+			}
+		}
+	}
+	return generated;
+}
+
+function tbgGenerateName(skipNickname, asJson) {
+	// Fetched from http://www.britishbabynames.com/blog/historic-names/
+	var fn = [
+		'Abiathar',
+		'Abraham',
+		'Abyssinia',
+		'Achilles',
+		'Ada',
+		'Adeliza',
+		'Adolphine',
+		'Africk',
+		'Agnes',
+		'Ahinoam',
+		'Aidan',
+		'Alberta',
+		'Alfred',
+		'Alice',
+		'Alpheus',
+		'Alphord',
+		'Amelia',
+		'Amos',
+		'Andalusia',
+		'Angel',
+		'Ann',
+		'Antrobus',
+		'Appolina',
+		'Aquilla',
+		'Arcada',
+		'Arden',
+		'Argentine',
+		'Arianwen',
+		'Armour',
+		'Arwin',
+		'Aseneth',
+		'Ashby',
+		'Asia',
+		'Athaliah',
+		'Athiah',
+		'Atholine',
+		'Atticus',
+		'Aubert',
+		'Aubrey',
+		'Augustus',
+		'Augustus',
+		'Auretta',
+		'Averilda',
+		'Avonia',
+		'Ayesha',
+		'Azariah',
+		'Azelpha',
+		'Barzallai',
+		'Bassett',
+		'Bathenia',
+		'Bathsheba',
+		'Bertha',
+		'Boadicea',
+		'Boswell',
+		'Brady',
+		'Bright',
+		'Britannia',
+		'Brunetta',
+		'Buenaventura',
+		'Cadwaladr',
+		'Caesar',
+		'Calphurnia',
+		'Cameron',
+		'Capitola',
+		'Capriella',
+		'Captain',
+		'Caroline',
+		'Catharine',
+		'Cecilia',
+		'Charity',
+		'Charles',
+		'Cherrie',
+		'Chichelé',
+		'Christiane',
+		'Chrysanthus',
+		'Chrysostom',
+		'Cleaton',
+		'Clement',
+		'Collatinus',
+		'Constantine',
+		'Copernicus',
+		'Cornelia',
+		'Cornish',
+		'Corti',
+		'Cuthwald',
+		'Cyrenius',
+		'Dagmar',
+		'David',
+		'Debonnaire',
+		'Decimus',
+		'Deodatus',
+		'Destainville',
+		'Dixon',
+		'Dogetta',
+		'Donnithorne',
+		'Doreo',
+		'Dorothy',
+		'Dosia',
+		'Ebenezer',
+		'Edith',
+		'Edmund',
+		'Edward',
+		'Eli',
+		'Elizabeth',
+		'Ellen',
+		'Elystra',
+		'Emanuel',
+		'Emily',
+		'Emma',
+		'Ernest',
+		'Esther',
+		'Ethel',
+		'Etheldreda',
+		'Eugenie',
+		'Evelyn',
+		'Evis',
+		'Ezer',
+		'Faerie',
+		'Faith',
+		'Faithful',
+		'Flora',
+		'Florence',
+		'Florentia',
+		'Fortunato',
+		'Frances',
+		'Frederic',
+		'Frederica',
+		'Fuchsia',
+		'Fulleretta',
+		'Gabriel',
+		'Garabaldi',
+		'Garibaldi',
+		'George',
+		'Gertrude',
+		'Giacomo',
+		'Gilbert',
+		'Golyddan',
+		'Gooseberry',
+		'Grace',
+		'Green',
+		'Gregory',
+		'Guildinah',
+		'Gundreda',
+		'Gustavus',
+		'Gwrthefyr',
+		'Gwyn',
+		'Hall',
+		'Hamlet',
+		'Hampton',
+		'Harriett',
+		'Harry',
+		'Hawkes',
+		'Helen',
+		'Henry',
+		'Hippolyte',
+		'Holly',
+		'Honey',
+		'Honoria',
+		'Honorine',
+		'Hope',
+		'Horace',
+		'Horatia',
+		'Hubert',
+		'Hugh',
+		'Hughetta',
+		'Hyacinth',
+		'Idloes',
+		'Ignatius',
+		'Ilbert',
+		'Iorwerth',
+		'Isabella',
+		'Jael',
+		'James',
+		'Jane',
+		'Jehoida',
+		'Jesse',
+		'Jessie',
+		'Job',
+		'John',
+		'Jonadab',
+		'Joseph',
+		'Josiah',
+		'Kate',
+		'Katinka',
+		'Keinwen',
+		'Kerenhappuch',
+		'Keyworth',
+		'King',
+		'Kirjath-Arba',
+		'Kresenz',
+		'Lavinia',
+		'Lehannah',
+		'Leighton',
+		'Lemon',
+		'Leofric',
+		'Leona',
+		'Leonora',
+		'Lilian',
+		'Lilias',
+		'Lot',
+		'Louisa',
+		'Louisa',
+		'Louise',
+		'Lucebella',
+		'Lucy',
+		'Lysander',
+		'Macey',
+		'Machon',
+		'Mackworth',
+		'Major',
+		'Margarita',
+		'Marguerite',
+		'Maria',
+		'Marion',
+		'Martha',
+		'Mary',
+		'Master',
+		'Matilda',
+		'Maude',
+		'May',
+		'Mazarina',
+		'Medora',
+		'Mehetabel',
+		'Melchizedeck',
+		'Meliora',
+		'Mellony',
+		'Menotti',
+		'Merina',
+		'Milborough',
+		'Milcah',
+		'Minda',
+		'Minnigrey',
+		'Modesta',
+		'Montague',
+		'Mooretta',
+		'Mordaunt',
+		'Moss',
+		'Napoleon',
+		'Napoleon',
+		'Naptheli',
+		'Nigel',
+		'Nimshi',
+		'Nina',
+		'Noble',
+		'Oakley',
+		'Obadiah',
+		'Obed',
+		'Ocean',
+		'Oceana',
+		'Ocena',
+		'Olinthus',
+		'Onslow',
+		'Onward',
+		'Ooryala',
+		'Orinthia',
+		'Orpha',
+		'Oswald',
+		'Othella',
+		'Otter',
+		'Pablo',
+		'Patterson',
+		'Penelope',
+		'Percival',
+		'Percy',
+		'Peregrine',
+		'Perinett',
+		'Phanetta',
+		'Philippa',
+		'Plato',
+		'Plethora',
+		'Pliny',
+		'Poppy',
+		'Powell',
+		'Prentice',
+		'Prideaux',
+		'Probert',
+		'Quill',
+		'Quinine',
+		'Quinta',
+		'Ranghilda',
+		'Rechabina',
+		'Repentance',
+		'Reuben',
+		'Rising',
+		'Roberts',
+		'Ruby',
+		'Rudolph',
+		'Ruthetta',
+		'Samuelina',
+		'Seabold',
+		'Secret',
+		'Selena',
+		'Selina',
+		'Septimus',
+		'Severn',
+		'Shadrach',
+		'Shakespeare',
+		'Sidney',
+		'Sidney',
+		'Siegwardine',
+		'Silence',
+		'Simeon',
+		'Smailes',
+		'Sophia',
+		'Sophy',
+		'Southern',
+		'Speedwell',
+		'Swan',
+		'Tamelier',
+		'Theodore',
+		'Theodosia',
+		'Thickness',
+		'Thirza',
+		'Thomas',
+		'Thyra',
+		'Topsy',
+		'Townsend',
+		'Travillian',
+		'Tymandra',
+		'Undecimus',
+		'Unwin',
+		'Urania',
+		'Valdemar',
+		'Vanda',
+		'Vandeleur',
+		'Vandloo',
+		'Varanna',
+		'Venus',
+		'Vernon',
+		'Victor',
+		'Vienna',
+		'Vignette',
+		'Violet',
+		'Violetta',
+		'Virgo',
+		'Virgo',
+		'Virtue',
+		'Watson',
+		'Wencke',
+		'William',
+		'Wolfe',
+		'Xenophina',
+		'Young',
+		'Younger',
+		'Zeddic',
+		'Zenas',
+		'Zibiah',
+		'Zilpah',
+		'Zinzan',
+		'Zuline',
+	];
+	// Fetched from http://www.names-surnames.com/most-common-surnames-uk/596-most-common-surnames-uk-1601-1800
+	var sn = [
+		'Ainley',
+		'Alder',
+		'Alford',
+		'Allard',
+		'Alves',
+		'Anwar',
+		'Armour',
+		'Ashford',
+		'Ashman',
+		'Atkin',
+		'Attwood',
+		'Avery',
+		'Aziz',
+		'Bainbridge',
+		'Baines',
+		'Bale',
+		'Bayliss',
+		'Beamish',
+		'Bickley',
+		'Biddle',
+		'Bill',
+		'Bing',
+		'Boland',
+		'Bramley',
+		'Buckingham',
+		'Burden',
+		'Burdett',
+		'Burland',
+		'Carrington',
+		'Chapple',
+		'Chisholm',
+		'Clamp',
+		'Coll',
+		'Collingwood',
+		'Cornock',
+		'Cosgrove',
+		'Coward',
+		'Crawley',
+		'Curley',
+		'Davenport',
+		'Deakin',
+		'Dibble',
+		'Donohoe',
+		'Dove',
+		'Dover',
+		'Down',
+		'Eadie',
+		'Eccles',
+		'Eddy',
+		'Edmond',
+		'Fagan',
+		'Fairlie',
+		'Falconer',
+		'Farrar',
+		'Felton',
+		'Ferris',
+		'Finn',
+		'Fitton',
+		'Frampton',
+		'Fretwell',
+		'Furlong',
+		'Galvin',
+		'Gascoyne',
+		'Gauntlett',
+		'Gilchrist',
+		'Gilmore',
+		'Glen',
+		'Gosling',
+		'Grady',
+		'Graves',
+		'Groom',
+		'Halford',
+		'Hamill',
+		'Hanlon',
+		'Harker',
+		'Harrop',
+		'Helm',
+		'Heron',
+		'Hetherington',
+		'Hinde',
+		'Hodges',
+		'Holdsworth',
+		'Hopkinson',
+		'Hopwood',
+		'Houlton',
+		'Hutchins',
+		'Islam',
+		'Jeffries',
+		'Keegan',
+		'Kendell',
+		'Kingston',
+		'Kipling',
+		'Last',
+		'Laurie',
+		'Laver',
+		'Laverick',
+		'Layton',
+		'Leake',
+		'Leal',
+		'Leggett',
+		'Lennox',
+		'Lewry',
+		'Linford',
+		'Lock',
+		'Mackinnon',
+		'Mackintosh',
+		'Madden',
+		'Magee',
+		'Mallinson',
+		'Manley',
+		'Massey',
+		'Mawson',
+		'Mccourt',
+		'Mccrudden',
+		'Mcelroy',
+		'Mcgee',
+		'Mcginty',
+		'Mcgrory',
+		'Mcknight',
+		'Mcnaught',
+		'Mcphail',
+		'Mears',
+		'Medcalf',
+		'Milford',
+		'Millett',
+		'Moreton',
+		'Mulholland',
+		'Mundy',
+		'Musgrove',
+		'Newby',
+		'Nicoll',
+		'O\'connell',
+		'O\'hare',
+		'O\'meara',
+		'Olivier',
+		'Osullivan',
+		'Otoole',
+		'Oxley',
+		'Parmar',
+		'Patrick',
+		'Pattison',
+		'Perrin',
+		'Petersen',
+		'Pickering',
+		'Pinsmail',
+		'Platts',
+		'Powers',
+		'Procter',
+		'Quigley',
+		'Radley',
+		'Rafferty',
+		'Raven',
+		'Rawlinson',
+		'Redding',
+		'Robert',
+		'Roscoe',
+		'Rowan',
+		'Rutter',
+		'Saville',
+		'Seddon',
+		'Selby',
+		'Sellars',
+		'Sexton',
+		'Shand',
+		'Shea',
+		'Shearer',
+		'Sherman',
+		'Showell',
+		'Sneddon',
+		'Snowdon',
+		'Stafford',
+		'Stainton',
+		'Stedman',
+		'Stout',
+		'Sturgess',
+		'Sweeting',
+		'Taggart',
+		'Thom',
+		'Thurston',
+		'Till',
+		'Tobin',
+		'Travis',
+		'Tweddle',
+		'Veitch',
+		'Vince',
+		'Waghorn',
+		'Watters',
+		'Weller',
+		'Whitham',
+		'Wilton',
+		'Wiltshire',
+		'Wiseman',
+		'Wong',
+		'Woodhead',
+		'Worsnop',
+		'Worth',
+		'Wraight',
+		'Wren',
+		'Yeatman',
+		'Younis'
+	];
+	var skipNickname = skipNickname || false;
+	var asJson = asJson || false;
+	var firstName = fn[tbgD(1, fn.length)-1];
+	var nickName = tbgGenerateNickname();
+	var surName = sn[tbgD(1, sn.length)-1];
+	
+	if (asJson) {
+		return {
+			first: firstName, nick: nickName, sur: surName,
+			fullName: function () {
+				return this.first
+					+ (this.nick !== null ?' "' + this.nick + '" ' : '')
+					+ this.sur;
+			},
+			fullNameNoNick: function () {
+				return this.first + ' ' + this.sur;
+			},
+			setAsHireling: function (type) {
+				this.first = type;
+				this.nick = null;
+				this.sur = '';
+			}
+		};
+	} else {
+		return firstName + ' '
+			+ (skipNickname ? '' : '"' + nickName + '"') + ' '
+			+ surName;
+	}
+}
+
+function tbgGenerateNickname() {
+	var adjs = [
+		'able',
+		'absent',
+		'absurd',
+		'accurate',
+		'active',
+		'actual',
+		'acute',
+		'additional',
+		'adequate',
+		'affected',
+		'affectionate',
+		'affirmative',
+		'afraid',
+		'agile',
+		'agitated',
+		'alien',
+		'alive',
+		'amazing',
+		'amusing',
+		'ancient',
+		'anxious',
+		'apathetic',
+		'appropriate',
+		'arrogant',
+		'artificial',
+		'attentive',
+		'attractive',
+		'authentic',
+		'auxiliary',
+		'awful',
+		'awkward',
+		'back',
+		'bad',
+		'banal',
+		'basic',
+		'beautiful',
+		'beneficial',
+		'best',
+		'biased',
+		'big',
+		'bitter',
+		'blunt',
+		'bold',
+		'bored',
+		'boring',
+		'brave',
+		'brief',
+		'bright',
+		'busy',
+		'calm',
+		'capable',
+		'careful',
+		'careless',
+		'cautious',
+		'celebrated',
+		'certain',
+		'cheap',
+		'cheerful',
+		'cheerless',
+		'chief',
+		'chilly',
+		'civilized',
+		'clean',
+		'clear',
+		'clever',
+		'close',
+		'clumsy',
+		'coarse',
+		'cold',
+		'colossal',
+		'colourful',
+		'colourless',
+		'comfortable',
+		'comic',
+		'comical',
+		'common',
+		'compassionate',
+		'competent',
+		'complete',
+		'complex',
+		'compliant',
+		'complicated',
+		'comprehensible',
+		'concerned',
+		'concise',
+		'confident',
+		'considerate',
+		'constructive',
+		'convenient',
+		'cool',
+		'correct',
+		'costly',
+		'courageous',
+		'cowardly',
+		'cozy',
+		'crafty',
+		'crazy',
+		'credible',
+		'cruel',
+		'cunning',
+		'curious',
+		'dangerous',
+		'dark',
+		'dead',
+		'deceitful',
+		'decent',
+		'deceptive',
+		'deep',
+		'definite',
+		'deft',
+		'delicate',
+		'delicious',
+		'dependable',
+		'dependent',
+		'destructive',
+		'devoted',
+		'dexterous',
+		'different',
+		'difficult',
+		'dim',
+		'direct',
+		'dirty',
+		'disgusting',
+		'dishonest',
+		'disinterested',
+		'disloyal',
+		'dispensable',
+		'distant',
+		'distinguished',
+		'docile',
+		'domestic',
+		'double',
+		'doubtful',
+		'dreadful',
+		'dry',
+		'dull',
+		'eager',
+		'early',
+		'easy',
+		'economical',
+		'educated',
+		'egoistic',
+		'elderly',
+		'elegant',
+		'eminent',
+		'empty',
+		'energetic',
+		'enormous',
+		'enough',
+		'entire',
+		'erroneous',
+		'essential',
+		'ethical',
+		'even',
+		'evident',
+		'evil',
+		'exact',
+		'excellent',
+		'excited',
+		'expensive',
+		'experienced',
+		'exquisite',
+		'fair',
+		'faithful',
+		'fake',
+		'false',
+		'famous',
+		'fantastic',
+		'far',
+		'fashionable',
+		'fast',
+		'fat',
+		'favorable',
+		'fearless',
+		'fictitious',
+		'final',
+		'fine',
+		'firm',
+		'first',
+		'fitting',
+		'flexible',
+		'following',
+		'fond',
+		'foolish',
+		'foreign',
+		'former',
+		'fortunate',
+		'fragile',
+		'free',
+		'frequent',
+		'fresh',
+		'friendly',
+		'frightened',
+		'front',
+		'full',
+		'fundamental',
+		'funny',
+		'general',
+		'generous',
+		'gentle',
+		'genuine',
+		'giant',
+		'gigantic',
+		'glad',
+		'gloomy',
+		'good',
+		'good-looking',
+		'good-natured',
+		'graceful',
+		'grand',
+		'grave',
+		'great',
+		'greedy',
+		'handsome',
+		'handy',
+		'happy',
+		'hard',
+		'hard-working',
+		'harmful',
+		'harsh',
+		'haughty',
+		'healthy',
+		'heavy',
+		'helpful',
+		'high',
+		'historical',
+		'honest',
+		'honorable',
+		'horrible',
+		'hostile',
+		'hot',
+		'huge',
+		'humane',
+		'humble',
+		'humorous',
+		'idle',
+		'ignorant',
+		'ill',
+		'illiterate',
+		'ill-mannered',
+		'ill-natured',
+		'illogical',
+		'immoral',
+		'impartial',
+		'impatient',
+		'impolite',
+		'important',
+		'impossible',
+		'improbable',
+		'improper',
+		'inaccurate',
+		'inactive',
+		'inadequate',
+		'inappropriate',
+		'inattentive',
+		'incapable',
+		'incompetent',
+		'incomplete',
+		'incomprehensible',
+		'inconsiderate',
+		'inconvenient',
+		'incorrect',
+		'incredible',
+		'indecent',
+		'indefinite',
+		'independent',
+		'indifferent',
+		'indispensable',
+		'inedible',
+		'inelegant',
+		'inexact',
+		'inexpensive',
+		'inexperienced',
+		'infamous',
+		'inflexible',
+		'infrequent',
+		'inhuman',
+		'initial',
+		'insane',
+		'insecure',
+		'insignificant',
+		'insincere',
+		'insufficient',
+		'intelligent',
+		'intelligible',
+		'interested',
+		'interesting',
+		'invaluable',
+		'irrational',
+		'joyful',
+		'just',
+		'keen',
+		'kind',
+		'large',
+		'last',
+		'late',
+		'laughable',
+		'lazy',
+		'left',
+		'light',
+		'likely',
+		'limited',
+		'literate',
+		'little',
+		'lively',
+		'local',
+		'logical',
+		'long',
+		'loose',
+		'loud',
+		'loving',
+		'low',
+		'loyal',
+		'lucky',
+		'lying',
+		'mad',
+		'magnificent',
+		'main',
+		'majestic',
+		'malicious',
+		'manageable',
+		'married',
+		'mean',
+		'mediocre',
+		'merciful',
+		'merciless',
+		'middle-aged',
+		'mild',
+		'miserable',
+		'miserly',
+		'misleading',
+		'modern',
+		'modest',
+		'moral',
+		'multiple',
+		'narrow',
+		'native',
+		'natural',
+		'near',
+		'neat',
+		'necessary',
+		'negative',
+		'nervous',
+		'new',
+		'next',
+		'nice',
+		'nimble',
+		'noble',
+		'noisy',
+		'normal',
+		'not clear',
+		'not enough',
+		'not free',
+		'not in style',
+		'not ready',
+		'not sure',
+		'not transparent',
+		'not true',
+		'not understandable',
+		'notorious',
+		'numerous',
+		'obedient',
+		'objective',
+		'obscene',
+		'obscure',
+		'obstinate',
+		'obvious',
+		'occupied',
+		'odd',
+		'old',
+		'old-fashioned',
+		'only',
+		'opaque',
+		'open',
+		'optional',
+		'ordinary',
+		'original',
+		'outdated',
+		'outstanding',
+		'partial',
+		'particular',
+		'passive',
+		'patient',
+		'peaceful',
+		'peculiar',
+		'petty',
+		'plain',
+		'pleasant',
+		'pleased',
+		'polite',
+		'poor',
+		'positive',
+		'possible',
+		'preceding',
+		'precious',
+		'precise',
+		'prejudiced',
+		'present',
+		'pretty',
+		'previous',
+		'priceless',
+		'primary',
+		'principal',
+		'probable',
+		'profitable',
+		'profound',
+		'prominent',
+		'proper',
+		'proud',
+		'qualified',
+		'quick',
+		'quiet',
+		'rapid',
+		'rare',
+		'rational',
+		'ready',
+		'real',
+		'rear',
+		'reasonable',
+		'refined',
+		'regular',
+		'relaxed',
+		'reliable',
+		'reluctant',
+		'remarkable',
+		'remote',
+		'renowned',
+		'repulsive',
+		'reputable',
+		'required',
+		'requisite',
+		'respectable',
+		'rich',
+		'ridiculous',
+		'right',
+		'rigid',
+		'rough',
+		'round',
+		'rude',
+		'ruthless',
+		'sad',
+		'safe',
+		'salty',
+		'scared',
+		'secondary',
+		'secure',
+		'self-confident',
+		'selfish',
+		'selfless',
+		'sensible',
+		'serious',
+		'severe',
+		'shabby',
+		'shaky',
+		'shallow',
+		'sharp',
+		'short',
+		'shy',
+		'sick',
+		'significant',
+		'silly',
+		'similar',
+		'simple',
+		'sincere',
+		'single',
+		'skilful',
+		'skilled',
+		'slender',
+		'slim',
+		'slow',
+		'sluggish',
+		'sly',
+		'small',
+		'smart',
+		'smooth',
+		'soft',
+		'sole',
+		'sour',
+		'special',
+		'specific',
+		'speedy',
+		'square',
+		'stable',
+		'stale',
+		'standard',
+		'steady',
+		'stiff',
+		'stingy',
+		'strange',
+		'strict',
+		'strong',
+		'stubborn',
+		'stupid',
+		'sturdy',
+		'stylish',
+		'submissive',
+		'subordinate',
+		'subsidiary',
+		'sufficient',
+		'suitable',
+		'superficial',
+		'sure',
+		'surprising',
+		'sweet',
+		'swift',
+		'tall',
+		'tasteful',
+		'tasteless',
+		'tasty',
+		'tender',
+		'tense',
+		'terrible',
+		'the same',
+		'thick',
+		'thin',
+		'thoughtful',
+		'thrifty',
+		'tidy',
+		'tight',
+		'timid',
+		'tiny',
+		'total',
+		'tough',
+		'transparent',
+		'treacherous',
+		'triangular',
+		'tricky',
+		'trite',
+		'true',
+		'trustworthy',
+		'truthful',
+		'ugly',
+		'unable',
+		'unbelievable',
+		'unbiased',
+		'uncertain',
+		'unclear',
+		'uncomfortable',
+		'understandable',
+		'uneducated',
+		'unethical',
+		'uneven',
+		'unfair',
+		'unfaithful',
+		'unfashionable',
+		'unfortunate',
+		'unfriendly',
+		'unhappy',
+		'unimportant',
+		'unintelligible',
+		'uninterested',
+		'unique',
+		'unjust',
+		'unkind',
+		'unknown',
+		'unlikely',
+		'unloving',
+		'unlucky',
+		'unmarried',
+		'unnatural',
+		'unnecessary',
+		'unpalatable',
+		'unpleasant',
+		'unqualified',
+		'unreal',
+		'unreasonable',
+		'unreliable',
+		'unsafe',
+		'unselfish',
+		'unskilled',
+		'unstable',
+		'unsuitable',
+		'untidy',
+		'untruthful',
+		'unusual',
+		'unwilling',
+		'up-to-date',
+		'useful',
+		'useless',
+		'usual',
+		'vague',
+		'valuable',
+		'valueless',
+		'vivid',
+		'warm',
+		'weak',
+		'wealthy',
+		'well-known',
+		'well-mannered',
+		'well-to-do',
+		'wet',
+		'whole',
+		'wide',
+		'willing',
+		'wise',
+		'wonderful',
+		'worried',
+		'worst',
+		'worthless',
+		'wrong',
+		'young'
+	];
+	var nick = adjs[tbgD(1, adjs.length)-1];
+	nick = nick[0].toUpperCase() + nick.substr(1);
+	return nick;
+}
+
+function tbgGenerateCharacter(companion, hirelingType) {
+	var companion = companion || false;
+	var hireling = (typeof hirelingType !== 'undefined');
+	var c = {
+		str: hireling ? 10 : tbgD(3, 6),
+		dex: hireling ? 10 : tbgD(3, 6),
+		will: hireling ? 10 : tbgD(3, 6),
+		hp: companion ? 1 : tbgD(1, 6)
+	};
+	
+	if (!companion && !hireling && tbgFlipCoin()) {
+		c.companions = [tbgGenerateCharacter(true)];
+	}
+	
+	if (companion) {
+		c.equipment = ['Sword (d6)'];
+	} else if (hireling) {
+		if (hirelingType === 'Lighter Boy') {
+			c.str = tbgD(2, 6);
+			c.equipment = ['Cost/day: 1 Shilling', 'Lantern', 'Club (1d6)'];
+		} else if (hirelingType === 'Mercenary') {
+			c.hp = tbgD(2, 6);
+			c.equipment = ['Cost/day: 5 Shillings', 'Musket (1d8)', 'Sword (1d6)'];
+		} else if (hirelingType === 'Expert') {
+			c.equipment = ['Cost/day: 10 Shillings', 'Pistol (1d6)', 'Expertise in a Specific Area'];
+		}
+	} else {
+		c.equipment = tbgGenerateItem(tbgD(1,3)+2);
+	}
+	
+	c.name = tbgGenerateName(false, true);
+	
+	return c;
+}
+
+function tbgGenerateImagePost(num) {
+	var places = [
+	['chapel', '"Wherever I turned, wherever I walked, there stood the chapel. I set it aflame the night before, and yet there it stands, again." - Deep Country chant'],
+	['chapel', 'Supposedly, a wooden chalice of unknown arcana can be found inside. At least, that is what %name% been saying all these years.'],
+	['towerdesert', '"Everytime a sailor dies, a brick crumbles in that tower," %firstname% told me between coughs. "It\'s arcana that keeps it up."'],
+	['towerdesert', 'Old city of St. %surname%. Their poison brewers are equally feared and known, unlike their loyality.'],
+	['prison', 'Rumour has it that the warder in the old Underground prison is at it again. He must be well over a hundred years old now, musn\'t he? Something\'s keeping \'im alive.'],
+	['prison', 'Wencke\'s Windsor Chair of Misplacement, a strange and uncomfortable arcanum for means of teleportation.'],
+	['mapbridge', '"Something\'s missing in them dockworkers eyes," %name% told us. "And not some soul or something, no, real stuff, you know? Like the white or..." He fell silent.'],
+	['mapbridge', 'The Underground river runs through these parts, but you wouldn\'t want to get caught under that bridge. More foul things than trolls dwell there.'],
+	['mapbridge', 'The Bridge District of southern Bastion. Stay clear of the Blunderbus Gang.'],
+	['prince', '"Prince of the Golden Lands, they call \'im! He\'ll come for you, with his bags of horrors! Be certain of that!" - %name%, ranting from the gallows'],
+	['prince', 'The Head Collector. If you seek an audience with him you better come prepared, if you know what I mean.'],
+	['prince', 'Rumour has it that Prince %firstname% beyond the Golden Lands is actually a golem, originating from Bastion. Whatever happened to its creator is unknown.'],
+	['sail', 'The Eidsvold on her first and last expedition on the Polar Ocean.'],
+	['streethouse', '"They say it\'s gin," old %surname% said, "but it\'s actually dog piss. You better only serve it to folks already drunk, you hear me?"'],
+	['palmview', '"Be sure to bring salt and the black candles in the cupboard. Lord %firstname% can\'t complete the ritual without them." (notes found on crumbled piece of paper)'],
+	['palmview', 'Port %surname%, the Golden Lands. It\'s been sealed off for foreigners for at least seventy years. What are they hiding, or what are they planning?'],
+	['palmview', 'Port %surname%, the Golden Lands. Overrun by fish-like creatures ten years ago. Noone\'s heard anything from the place since.'],
+	['rock', 'Supposedly, the Isle of Faceless Apes is just a fortnight\'s sail from Bastion.'],
+	['rock', 'Rumour has it, that the only grave on Umbra Rock is empty. Whatever they put in it has left, and is searching for a new pair of eyes.'],
+	['machine', '"Did you hear about old Giles? They say he was dead for two weeks, but the devils brought \'im back. Still work to be done, they say."'],
+	['machine', 'Artist\'s rendition of the Reanimator, the infernal machine found in a basement in the industrial district. It is believed to bring people back from the dead. It runs on rum.'],
+	['gate', '"%name% told me that\'s the gate to hell. One morning it just stood there. Door\'s locked but that never stopped anyone, ey? Said they\'ve heard muffled voices behind the door."'],
+	['gate', 'The unfinished chapel of St. %surname%. A relic of unwanted power is said to be hidden in a cache in the western wall.'],
+	['shell', 'The Shell of %name%. Put your mouth against it, and it can store five seconds of spoken words. Put it against your ear to hear the recording.'],
+	['moon', 'Every fifth full moon over Bastion is capable of granting lesser wishes, but only those of violence.'],
+	['moon', 'They say %name% is obsessed with the moon, and planning to build a machine to taken him there, whatever the price.'],
+	['engravings', 'The Script of the Mare. These engravings can be found throughout Bastion carved in all things wooden (mostly doors). It\'s believed to summon the Mare from beyond the Golden Lands.'],
+	['engravings', 'Coins of Port %surname%. Believed to become posionous if they ever leave the city.'],
+	['engravings', 'Top view map of the inner district of the Mad City of %surname%. The city resides on a remote island in the middle of the Polar Ocean, or so it is said.'],
+	['gatejump', 'The Mask of Nneka grants its wearer the ability to jump as high as an antelope, but only during the night.'],
+	['whip', 'The Feather Duster of %name% summons sandflies and mosquitoes the size of dogs when used.'],
+	['shepherd', '"I\'ve heard them golden landers got three legs," %name% said behind his filthy glass of muddy ale. "One grows out of their arse."'],
+	['shepherd', '%firstname% the Peg-Legged. Attractor of dogs and metals.'],
+	['iceberg', 'Palace of Uhr Iziz, the Keeper of Unfulfilled Wishes. Often mistaken for an iceberg when spotted on the Polar Ocean.'],
+	['iceberg', 'The gulls of the Polar Ocean are able to communicate with the undead whales of the deep.']
+	];
+	var num = num || 1;
+	for (i=0; i < num; ++i) {
+		var whatIndex = tbgD(1, places.length) - 1;
+		if (num > 1) {
+			whatIndex = places.length - i - 1;
+		}
+		var whatPlace = places[whatIndex];
+		var name = tbgGenerateName(false, true);
+		var html = [
+			'<a href="%src%" target="_blank">',
+			'<img src="%src%">',
+			'</a>',
+			'<footer>',
+			'%desc%',
+			'</footer>',
+		]
+		.join('')
+		.replaceAll('%src%', 'places/' + whatPlace[0] + '.png')
+		.replaceAll('%desc%',
+			whatPlace[1]
+				.replaceAll('%name%', name.fullNameNoNick())
+				.replaceAll('%name&nick%', name.fullName())
+				.replaceAll('%firstname%', name.first)
+				.replaceAll('%surname%', name.sur)
+				.replaceAll('%nick%', name.nick))
+		;
+		var node = document.createElement('article');
+		node.className = 'imagepost';
+		node.innerHTML = html;
+		document.getElementById('images').appendChild(node);
+	}
+	return node;
+}
+
+function tbgMakePost(c) {
+	var companion = '';
+	var equipment = '';
+	if (c.companions) {
+		companion = '<strong>Companion:</strong> ' + c.companions[0].name.fullName(); 
+	}
+	c.equipment.forEach(function (item) {
+		if (['Lighter Boy', 'Mercenary', 'Expert'].indexOf(item) >= 0) {
+			c.hirelingType = item;
+		} else {
+			if (equipment.length > 0) {
+				equipment += ', ';
+			}
+			equipment += item;
+		}
+	});
+	
+	var html = [
+		'<section class="text">',
+		'<div class="fullname">%fullname%</div>',
+		'<section class="abilities">',
+		'<div class="property savingthrow">STR <div class="propertyvalue">%str%</div></div>',
+		'<div class="property savingthrow">DEX <div class="propertyvalue">%dex%</div></div>',
+		'<div class="property savingthrow">WIL <div class="propertyvalue">%wil%</div></div>',
+		'<div class="property">HP <div class="propertyvalue">%hp%</div></div>',
+		'</section>',
+		'<div class="equipment">%equipment%</div>',
+		'<div class="companion">%companion%</div>',
+		'</section>'
+	]
+	.join('')
+	.replaceAll('%fullname%', c.name.fullName())
+	.replaceAll('%str%', c.str)
+	.replaceAll('%dex%', c.dex)
+	.replaceAll('%wil%', c.will)
+	.replaceAll('%hp%', c.hp)
+	.replaceAll('%equipment%', equipment)
+	.replaceAll('%companion%', companion)
+	;
+	var node = document.createElement('article');
+	node.className = 'post';
+	node.innerHTML = html;
+	document.getElementById('sheet').appendChild(node);
+	return node;
+}
+
+function tbgMakePermaLink() {
+	var href = window.location + '?s=' + tbgLCG.startseed;
+	var node = document.createElement('a');
+	var parent = document.getElementById('about');
+	node.href = href;
+	node.target = '_blank';
+	node.innerHTML = 'Permalink.';
+	parent.insertBefore(node, parent.childNodes[0]);
+	return node;
+}
+
+function tbgGetQsMap () {
+	var url = window.location.search,
+		map={}, qs, params;
+		
+	if (url && url.length > 0) {
+		qs = url.substring(1).split('&');
+		for (var i=0; i < qs.length; ++i) {
+			params = qs[i].split('=');
+			map[params[0]] = params[1];
+		}
+	}
+	return map;
+}
+
+function tbgMakeSavingThrow(name, value) {
+	var roll = tbgD(1, 20);
+	var s = name + '-save: ';
+	if (roll === 20 || roll > value) {
+		s += 'FAILURE';
+	} else {
+		s += 'SUCCESS';
+	}
+	s += ' (rolled ' + roll + ' vs. ' + value + ')';
+	alert(s);
+}
+
+function tbgMakeSavingThrowsClickable() {
+	var els = document.querySelectorAll('.savingthrow');
+	for (i=0; i < els.length; ++i) {
+		var propertyName = els[i].childNodes[0].nodeValue.trim();
+		var propertyValue = parseInt(els[i].querySelector('.propertyvalue').innerHTML, 10);
+		els[i].addEventListener('click', tbgMakeSavingThrow.bind(els[i], propertyName, propertyValue));
+	}
+}
+
+String.prototype.replaceAll = function (from, to) {
+	var n1 = this;
+	var n2;
+	do {
+		n2 = n1;
+		n1 = n1.replace(from, to);
+	} while (n1 !== n2);
+	return n1;
+};
+
+var map = tbgGetQsMap();
+if (typeof map.s !== 'undefined' && !isNaN(parseInt(map.s, 10))) {
+	tbgLCG.seed = parseInt(map.s, 10);
+}
+tbgLCG.init();
+
+tbgSetNewspaperDate();
+for(i=0; i<1; ++i) {
+	var c = tbgGenerateCharacter();
+	tbgMakePost(c);
+	if (c.companions) {
+		tbgMakePost(c.companions[0]);
+	}
+	if (c.hirelingType) {
+		var hireling = tbgGenerateCharacter(false, c.hirelingType);
+		hireling.name.setAsHireling(c.hirelingType);
+		tbgMakePost(hireling);
+	}
+}
+tbgGenerateImagePost();
+tbgMakePermaLink();
+tbgMakeSavingThrowsClickable();
+</script>
+
+</body>
+</html>
